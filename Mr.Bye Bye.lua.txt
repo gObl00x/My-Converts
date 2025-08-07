@@ -8,8 +8,9 @@ Duration = 15;
 -- This edit/convert is by gObl00x ( random_hacke6 *RobloxUser* )--------------------
 -- Credits to whoever the hell made the original Script ---------
 
--- Mr bye bye main --
+-- MrByeBye MAIN
 script=game:GetObjects("rbxassetid://6515226671")[1].Convert
+
 -- Definitions
 local Player = game.Players.LocalPlayer
 if Player then
@@ -1312,4 +1313,5 @@ while true do
 	sick.Volume = 3
 	sick.Playing = true
 end
+
 end
