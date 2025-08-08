@@ -1,7 +1,15 @@
+-- gObl00x Notification
+game:GetService("StarterGui"):SetCore("SendNotification", { 
+	Title = "gOb scripts";
+	Text = "This Convert Is by gOb..";
+	Icon = "rbxthumb://type=Asset&id=126389658690593&w=150&h=150"})
+Duration = 15;
+----------------------------------------------------------------
+-- This edit/convert is by gObl00x ( random_hacke6 *RobloxUser* )--------------------
 script=game:GetObjects("rbxassetid://4665394711")[1].Convert
 writefile("Server Admin Soundtrack.mp3", game:HttpGet("https://github.com/gObl00x/Soundtracks/raw/refs/heads/main/Server%20Admin%20Soundtrack.mp3"))
 --//====================================================\\--
---||  CREATED BY SHACKLUSTER; CONVERTER BY gOb (I don't take credits) --
+--||  CREATED BY SHACKLUSTER; gOb: I don't take credits --
 --\\====================================================//--
 
 Player = game.Players.LocalPlayer
