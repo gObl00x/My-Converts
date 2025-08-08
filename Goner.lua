@@ -9,6 +9,8 @@ Duration = 15;
 -- Credits to whoever the hell made the original Script ---------
 
 script=game:GetObjects("rbxassetid://4513235536")[1].Goner.ServerScript
+if not isfile("goner.mp3") then 
+	writefile("goner.mp3",game:HttpGet("https://github.com/Nitro-GT/music/raw/refs/heads/main/goner.mp3"))
 --//====================================================\\--
 --||                       BASIS
 --\\====================================================//--
