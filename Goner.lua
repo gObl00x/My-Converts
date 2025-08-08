@@ -12,11 +12,12 @@ script=game:GetObjects("rbxassetid://4513235536")[1].Goner.ServerScript
 --//====================================================\\--
 --||                       BASIS
 --\\====================================================//--
+
 local MODULE = script.Parent
 local PLAYER = game.Players.LocalPlayer
 local CHARACTER = PLAYER.Character
 local HUM = CHARACTER.Humanoid
-
+local REMOTE = MODULE.Event
 local ROOT = HUM.Torso
 local HEAD = CHARACTER.Head
 local TORSO = CHARACTER.Torso
@@ -31,8 +32,6 @@ local LEFTSHOULDER = TORSO["Left Shoulder"]
 local RIGHTHIP = TORSO["Right Hip"]
 local LEFTHIP = TORSO["Left Hip"]
 local MOUSEPOS = ROOT.Position
-local UserInputService = game:GetService("UserInputService")
-
 IT = Instance.new
 CF = CFrame.new
 VT = Vector3.new
@@ -50,17 +49,13 @@ ABS = math.abs
 MRANDOM = math.random
 FLOOR = math.floor
 
---//====================================================\\--
---||                       FE CODE
---\\====================================================//--
-print("gObl00x its a SIGMA 🔥")
 --------------------------------------------------------------
+Mouse,mouse,UserInputService,ToolFunction,GuiWire,RenderStepped,Player=game.Players.LocalPlayer:GetMouse(),game.Players.LocalPlayer:GetMouse(),game:GetService("UserInputService"),nil,nil,nil
 --//====================================================\\--
 --||                  BACKGROUND VALUES
 --\\====================================================//--
-
 local ANIM_SPEED = 3
-local MOUSE = Mouse
+local MOUSE = game.Players.LocalPlayer:GetMouse()
 local FRAME_SPEED = 1 / 60 -- (1 / 30) OR (1 / 60)
 local CHANGE = 2 / ANIM_SPEED
 local DAMAGEMULTIPLIER = 1
@@ -76,23 +71,42 @@ local ROOTC0 = CF(0, 0, 0) * ANGLES(RAD(-90), RAD(0), RAD(180))
 local NECKC0 = CF(0, 1, 0) * ANGLES(RAD(-90), RAD(0), RAD(180))
 local RIGHTSHOULDERC0 = CF(-0.5, 0, 0) * ANGLES(RAD(0), RAD(90), RAD(0))
 local LEFTSHOULDERC0 = CF(0.5, 0, 0) * ANGLES(RAD(0), RAD(-90), RAD(0))
-
 --//====================================================\\--
 --||                     HEARTBEAT
 --\\====================================================//--
-
+local PLR = game:GetService("Players").LocalPlayer
+local CHAR = PLR.Character
+local HUM = CHAR:FindFirstChildOfClass("Humanoid")
+--script.Parent.Animate:Remove()
+for _,v in next, HUM:GetPlayingAnimationTracks() do
+	v:Stop();
+end
+local EVENT = REMOTE
+local MOUSE = PLR:GetMouse()
+--[[game:service'RunService'.RenderStepped:connect(function()
+	EVENT:FireServer("MousePositionUpdate",MOUSE.Hit.p)
+end)]]
+MOUSE.KeyDown:Connect(function(KEY)
+	EVENT:FireServer("KeyDown",KEY)
+end)
+MOUSE.KeyUp:Connect(function(KEY)
+	EVENT:FireServer("KeyUp",KEY)
+end)
+MOUSE.Button1Down:Connect(function()
+	EVENT:FireServer("MouseDown")
+end)
+MOUSE.Button1Up:Connect(function()
+	EVENT:FireServer("MouseUp")
+end)
 ArtificialHB = Instance.new("BindableEvent", script)
 ArtificialHB.Name = "ArtificialHB"
-
 script:WaitForChild("ArtificialHB")
-
 frame = FRAME_SPEED
 tf = 0
 allowframeloss = false
 tossremainder = false
 lastframe = tick()
 script.ArtificialHB:Fire()
-
 game:GetService("RunService").Heartbeat:connect(function(s, p)
 	tf = tf + s
 	if tf >= frame then
@@ -112,21 +126,18 @@ game:GetService("RunService").Heartbeat:connect(function(s, p)
 		end
 	end
 end)
-
 function PositiveAngle(NUMBER)
 	if NUMBER >= 0 then
 		NUMBER = 0
 	end
 	return NUMBER
 end
-
 function NegativeAngle(NUMBER)
 	if NUMBER <= 0 then
 		NUMBER = 0
 	end
 	return NUMBER
 end
-
 function Swait(NUMBER)
 	if NUMBER == 0 or NUMBER == nil then
 		ArtificialHB.Event:wait()
@@ -136,11 +147,9 @@ function Swait(NUMBER)
 		end
 	end
 end
-
 --//====================================================\\--
 --||                       CLERP
 --\\====================================================//--
-
 function QuaternionFromCFrame(cf)
 	local mx, my, mz, m00, m01, m02, m10, m11, m12, m20, m21, m22 = cf:components()
 	local trace = m00 + m11 + m22
@@ -209,7 +218,6 @@ function QuaternionSlerp(a, b, t)
 	end
 	return a[1] * startInterp + b[1] * finishInterp, a[2] * startInterp + b[2] * finishInterp, a[3] * startInterp + b[3] * finishInterp, a[4] * startInterp + b[4] * finishInterp
 end
-
 function Clerp(a, b, t)
 	local qa = {QuaternionFromCFrame(a)}
 	local qb = {QuaternionFromCFrame(b)}
@@ -218,11 +226,9 @@ function Clerp(a, b, t)
 	local _t = 1 - t
 	return QuaternionToCFrame(_t * ax + t * bx, _t * ay + t * by, _t * az + t * bz, QuaternionSlerp(qa, qb, t))
 end
-
 --//====================================================\\--
 --||                     FUNCTIONS
 --\\====================================================//--
-
 function WeldParts(A,B)
 	local WLD = IT("ManualWeld")
 	WLD.Part0 = A
@@ -231,10 +237,14 @@ function WeldParts(A,B)
 	WLD.Parent = A
 	return WLD
 end
-
 --NewSound({ID = 0,PARENT = ROOT,VOLUME = 0.5,PITCH = 1,LOOP = false,MAXDISTANCE = 1000,EMITTERSIZE = 10,PLAYING = true,PLAYONREMOVE = false,DOESDEBRIS = true})
 function NewSound(TABLE)
-	local ID = "rbxassetid://"..(TABLE.ID or 0)
+local ID
+    if typeof(TABLE.ID) == "number" then
+	 ID = "rbxassetid://"..(TABLE.ID or 0)
+    elseif typeof(TABLE.ID) == "string" then 
+        ID = getcustomasset(TABLE.ID)
+    end
 	local PARENT = (TABLE.PARENT or ROOT)
 	local VOLUME = (TABLE.VOLUME or 0.5)
 	local PITCH = (TABLE.PITCH or 1)
@@ -244,7 +254,6 @@ function NewSound(TABLE)
 	local PLAYING = (TABLE.PLAYING or true)
 	local PLAYONREMOVE = (TABLE.PLAYONREMOVE or false)
 	local DOESDEBRIS = (TABLE.DOESDEBRIS or true)
-	if ID ~= "rbxassetid://0" then
 		local SOUND = IT("Sound",PARENT)
 		SOUND.SoundId = ID
 		SOUND.Volume = VOLUME
@@ -260,9 +269,7 @@ function NewSound(TABLE)
 			SOUND:Play()
 		end
 		return SOUND
-	end
 end
-
 function OofOuchBlood(LOCATION,TO,AMOUNT)
 	local P = CreatePart(3, Effects, "Granite", 0, 1, BRICKC("Pearl"), "Blood", VT(0,0,0), true)
 	P.CFrame = CF(LOCATION,TO)
@@ -271,7 +278,6 @@ function OofOuchBlood(LOCATION,TO,AMOUNT)
 	BLOOD:Emit(AMOUNT)
 	Debris:AddItem(P,2)
 end
-
 function CreateMesh(MESH, PARENT, MESHTYPE, MESHID, TEXTUREID, SCALE, OFFSET)
 	local NEWMESH = IT(MESH)
 	if MESH == "SpecialMesh" then
@@ -288,7 +294,6 @@ function CreateMesh(MESH, PARENT, MESHTYPE, MESHID, TEXTUREID, SCALE, OFFSET)
 	NEWMESH.Parent = PARENT
 	return NEWMESH
 end
-
 function CreatePart(FORMFACTOR, PARENT, MATERIAL, REFLECTANCE, TRANSPARENCY, BRICKCOLOR, NAME, SIZE, ANCHOR)
 	local NEWPART = IT("Part")
 	NEWPART.formFactor = FORMFACTOR
@@ -309,12 +314,10 @@ function CreatePart(FORMFACTOR, PARENT, MATERIAL, REFLECTANCE, TRANSPARENCY, BRI
 	NEWPART.Parent = PARENT
 	return NEWPART
 end
-
 function Raycast(POSITION, DIRECTION, RANGE, TABLE)
 	local TABLE = ((type(TABLE) == "table" and TABLE) or {TABLE})
 	return game:GetService("Workspace"):FindPartOnRayWithIgnoreList(Ray.new(POSITION, DIRECTION * RANGE), TABLE)
 end
-
 function CameraShake(AREA,RANGE,SHAKE,TIMER)
 	for index, CHILD in pairs(workspace:GetChildren()) do
 		if CHILD:FindFirstChildOfClass("Humanoid") then
@@ -340,7 +343,6 @@ function CameraShake(AREA,RANGE,SHAKE,TIMER)
 		end
 	end
 end
-
 --Debree({Delay = 1.5,Variant = "",Location = ROOT.Position,Color = C3(1,1,1),Size = 1,Distance = 1,Material = "Slate",Scatter = 1,Amount = 1,DebreeCount = 1})
 function Debree(Table)
 	local KindOf = (Table.Variant or "Ring")
@@ -400,7 +402,6 @@ function Debree(Table)
 		end
 	end))
 end
-
 function Chatter(Text,Timer)
 	local chat = coroutine.wrap(function()
 		if CHARACTER:FindFirstChild("SpeechBoard")~= nil then
@@ -411,7 +412,7 @@ function Chatter(Text,Timer)
 		naeeym2.StudsOffset = Vector3.new(0,2,0)
 		naeeym2.Adornee = HEAD
 		naeeym2.Name = "SpeechBoard"
-		naeeym2.AlwaysOnTop = true
+		naeeym2.AlwaysOnTop = false
 		local tecks2 = IT("TextLabel",naeeym2)
 		tecks2.BackgroundTransparency = 1
 		tecks2.BorderSizePixel = 0
@@ -419,14 +420,13 @@ function Chatter(Text,Timer)
 		tecks2.Font = "Legacy"
 		tecks2.TextSize = 15
 		tecks2.TextStrokeTransparency = 0
-		tecks2.TextColor3 = Color3.new(1,1,1)
-		tecks2.TextStrokeColor3 = Color3.new(0,0,0)
+		tecks2.TextColor3 = Color3.new(0,0,0)
+		tecks2.TextStrokeColor3 = Color3.fromRGB(255,0,0)
 		tecks2.Size = UDim2.new(1,0,0.5,0)
 		for i = 1,string.len(Text),1 do
 			if naeeym2.Parent ~= CHARACTER then 
 				break
 			end
-			NewSound({ID = 418252437,PARENT = HEAD,VOLUME = 1,PITCH = MRANDOM(8,12)/10,LOOP = false,MAXDISTANCE = 75,EMITTERSIZE = 15,PLAYING = true,PLAYONREMOVE = false,DOESDEBRIS = true})
 			tecks2.Text = string.sub(Text,1,i)
 			wait(Timer)
 		end
@@ -435,13 +435,14 @@ function Chatter(Text,Timer)
 	end)
 	chat()
 end
-
 function SpawnPuddle(POSITION,IGNR,GOO)
 	local HIT,POS,NOR = Raycast(POSITION, CFrame.new(POSITION,POSITION-Vector3.new(0,1,0)).lookVector, 12, {IGNR,CHARACTER})
 	if HIT then
 		coroutine.resume(coroutine.create(function()
+        if _G.Puddle == true then
 			local GOREPART = CreatePart(3, Effects, "Slate", 0, 1, "Pearl", "Gore", VT(3,0,3), true)
 			local SURFACE = script.PuddleSurface:Clone()
+            SURFACE.Image.Image = getcustomasset("gonergoop.png")
 			SURFACE.Parent = GOREPART
 			if GOO == true then
 				SURFACE.Image.ImageColor3 = C3(0,0,0)
@@ -457,10 +458,10 @@ function SpawnPuddle(POSITION,IGNR,GOO)
 				SURFACE.Image.ImageTransparency = SURFACE.Image.ImageTransparency + 1/25
 			end
 			GOREPART:Remove()
+            end
 		end))
 	end
 end
-
 function Dismember(MAN,DOWHAT)
 	for index, CHILD in pairs(MAN:GetDescendants()) do
 		if CHILD:IsA("Script") or CHILD:IsA("LocalScript") then
@@ -469,9 +470,6 @@ function Dismember(MAN,DOWHAT)
 	end
 	if DOWHAT == "Ragdoll" then
 		local HUM = MAN:FindFirstChildOfClass("Humanoid")
-		if HUM then
-			HUM.Health = 0
-		end
 		if MAN:FindFirstChild("UpperTorso") then
 			local SCRIPT = script.R15Ragdoll:Clone()
 			SCRIPT.Parent = MAN
@@ -520,15 +518,13 @@ function Dismember(MAN,DOWHAT)
 		end
 	end
 end
-
 function Speak(ID)
-	local S = NewSound({ID = ID,PARENT = HEAD,VOLUME = 6,PITCH = 1,LOOP = false,MAXDISTANCE = 300,EMITTERSIZE = 35,PLAYING = false,PLAYONREMOVE = false,DOESDEBRIS = true})
+	local S = NewSound({ID = ID,PARENT = HEAD,VOLUME = 10,PITCH = 1,LOOP = false,MAXDISTANCE = 300,EMITTERSIZE = 35,PLAYING = false,PLAYONREMOVE = false,DOESDEBRIS = true})
 	script.ChorusSoundEffect:Clone().Parent = S
 	script.Pitch:Clone().Parent = S
 	S:Play()
 	Debris:AddItem(S,S.TimeLength+5)
 end
-
 --//====================================================\\--
 --||                     CHARACTER
 --\\====================================================//--
@@ -600,7 +596,6 @@ end)
 --//====================================================\\--
 --||                     ABILITIES
 --\\====================================================//--
-
 function Slash()
 	ATTACKING = true
 	for i=0, 0.2, 0.1 / ANIM_SPEED do
@@ -639,15 +634,14 @@ function Slash()
 							FACE.Transparency = 0.5
 						end
 					end
-					Dismember(CHILD,"Ragdoll")
-					Dismember(CHILD,"Head")
+                    attackuno(HEAD.Parent)
 					NewSound({ID = 264486467,PARENT = ROOT2,VOLUME = 2,PITCH = 0.7,LOOP = false,MAXDISTANCE = 100,EMITTERSIZE = 15,PLAYING = true,PLAYONREMOVE = false,DOESDEBRIS = true})
 					NewSound({ID = SOUND_SNAP,PARENT = ROOT2,VOLUME = 6,PITCH = 1,LOOP = false,MAXDISTANCE = 100,EMITTERSIZE = 15,PLAYING = true,PLAYONREMOVE = false,DOESDEBRIS = true})
 					for i = 1, 7 do
 						OofOuchBlood(ROOT2.Position,CF(ROOT2.Position)*ANGLES(0,RAD(MRANDOM(0,359)),0)*CF(0,1,-1).p,45)
 					end
 					coroutine.resume(coroutine.create(function()
-						for i = 1, 25 do
+						for i = 1, 15 do
 							SpawnPuddle(ROOT2.Position,CHILD,false)
 							Swait()
 						end
@@ -669,7 +663,6 @@ function Slash()
 	TRAIL.Enabled = false
 	ATTACKING = false
 end
-
 function Execute(INPUT)
 	local TARGET = nil
 	local DIST = 6
@@ -699,7 +692,6 @@ function Execute(INPUT)
 		local TARGETSTATIC = nil
 		if game:GetService("Players"):GetPlayerFromCharacter(TARGET) then
 			TARGETSTATIC = script.GonerStatic:Clone()
-			TARGETSTATIC.Parent = game:GetService("Players"):GetPlayerFromCharacter(TARGET).PlayerGui
 			local SOUND = NewSound({ID = 2737898305,PARENT = TARGETSTATIC.Script,VOLUME = 3,PITCH = 1,LOOP = true,MAXDISTANCE = 125,EMITTERSIZE = 15,PLAYING = true,PLAYONREMOVE = false,DOESDEBRIS = false})
 			SOUND.Name = "Static"
 			Swait()
@@ -750,8 +742,6 @@ function Execute(INPUT)
 				LEFTHIP.C0 = Clerp(LEFTHIP.C0, CF(-1, -1, 0) * ANGLES(RAD(0), RAD(-60), RAD(0)) * ANGLES(RAD(-3), RAD(0), RAD(0)), 1.5 / ANIM_SPEED)
 			end
 			CameraShake(ROOT.Position,4.6,15,25)
-			Dismember(TARGET,"Ragdoll")
-			Dismember(TARGET,"Head")
 			DedFace()
 			GYRO:Remove()
 			NewSound({ID = 264486467,PARENT = TARGETTORSO,VOLUME = 2,PITCH = 0.7,LOOP = false,MAXDISTANCE = 100,EMITTERSIZE = 15,PLAYING = true,PLAYONREMOVE = false,DOESDEBRIS = true})
@@ -800,8 +790,6 @@ function Execute(INPUT)
 				LEFTHIP.C0 = Clerp(LEFTHIP.C0, CF(-1, -1, 0) * ANGLES(RAD(0), RAD(-60), RAD(0)) * ANGLES(RAD(-3), RAD(0), RAD(0)), 1.5 / ANIM_SPEED)
 			end
 			CameraShake(ROOT.Position,4.6,15,25)
-			Dismember(TARGET,"Ragdoll")
-			Dismember(TARGET,"Legs")
 			DedFace()
 			GYRO:Remove()
 			NewSound({ID = 264486467,PARENT = TARGETTORSO,VOLUME = 2,PITCH = 0.7,LOOP = false,MAXDISTANCE = 100,EMITTERSIZE = 15,PLAYING = true,PLAYONREMOVE = false,DOESDEBRIS = true})
@@ -832,7 +820,6 @@ function Execute(INPUT)
 				GRABB:Remove()
 				TARGETTORSO.Anchored = true
 				local DEAD = false
-				Dismember(TARGET,"Ragdoll")
 				coroutine.resume(coroutine.create(function()
 					repeat
 						Swait()
@@ -860,7 +847,6 @@ function Execute(INPUT)
 					OofOuchBlood(TARGETTORSO.Position,CF(TARGETTORSO.Position)*ANGLES(0,RAD(MRANDOM(0,359)),0)*CF(0,1,-1).p,15)
 				end
 				CameraShake(ROOT.Position,4.6,15,25)
-				Dismember(TARGET,"LeftArm")
 				local ARM = TARGET:FindFirstChild("Left Arm") or TARGET:FindFirstChild("LeftUpperArm")
 				if ARM then
 					local BV = IT("BodyVelocity")
@@ -918,7 +904,6 @@ function Execute(INPUT)
 			else
 				TARGETTORSO.Anchored = true
 				local POS = ROOT.Position
-				Dismember(TARGET,"Ragdoll")
 				TARGET.Parent = Effects
 				for i = 1, 60 do
 					Swait()
@@ -941,7 +926,6 @@ function Execute(INPUT)
 					TARGETTORSO.CFrame = Clerp(TARGETTORSO.CFrame,ROOT.CFrame*CF(0,-3,-1.2) * ANGLES(RAD(-90), RAD(0), RAD(0)),0.3)
 				until DEAD == true
 				DedFace()
-				Dismember(TARGET,"Ragdoll")
 				coroutine.resume(coroutine.create(function()
 					for i = 1, 25 do
 						SpawnPuddle(TARGETTORSO.Position+VT(0,1,0),TARGET,false)
@@ -1011,6 +995,7 @@ function Execute(INPUT)
 		GYRO:Remove()
 		if (INPUT ~= "c" or SUBMERGED == false) then
 			Speak(2291326656)
+              Chatter("I am the true king.",.075)
 		end
 		STATIC:Remove()
 		if TARGETSTATIC then
@@ -1019,10 +1004,10 @@ function Execute(INPUT)
 		GRABA:Remove()
 		GRABB:Remove()
 		ROOT.Anchored = false
+        attackuno(TARGET)
 		ATTACKING = false
 	end
 end
-
 function Shriek()
 	ROOT.Anchored = true
 	ATTACKING = true
@@ -1052,19 +1037,19 @@ function Shriek()
 				if ROOT2 and HUMAN.Health > 0 and CHILD:FindFirstChild("Head") then
 					if (ROOT2.Position - ROOT.Position).Magnitude < 45 then
 						local HED = CHILD:FindFirstChild("Head")
-						Dismember(CHILD,"Ragdoll")
 						for i = 1, 7 do
 							OofOuchBlood(HED.Position,CF(HED.Position)*ANGLES(0,RAD(MRANDOM(0,359)),0)*CF(0,1,-1).p,45)
 						end
 						NewSound({ID = 264486467,PARENT = ROOT2,VOLUME = 2,PITCH = 0.7,LOOP = false,MAXDISTANCE = 100,EMITTERSIZE = 15,PLAYING = true,PLAYONREMOVE = false,DOESDEBRIS = true})
 						NewSound({ID = SOUND_SNAP,PARENT = ROOT2,VOLUME = 6,PITCH = 1,LOOP = false,MAXDISTANCE = 100,EMITTERSIZE = 15,PLAYING = true,PLAYONREMOVE = false,DOESDEBRIS = true})
-						coroutine.resume(coroutine.create(function()
+                        HED.Name = "Hed"
+                        coroutine.resume(coroutine.create(function()
 							for i = 1, 8 do
 								SpawnPuddle(ROOT2.Position+VT(0,1,0),CHILD,false)
 								Swait()
 							end
 						end))
-						HED:Remove()
+                        attackuno(HED.Parent)
 					end
 				end
 			end
@@ -1081,97 +1066,105 @@ function Shriek()
 	Debris:AddItem(FACE,1)
 	ATTACKING = false
 	ROOT.Anchored = false
+    	for index, CHILD in pairs(workspace:GetChildren()) do
+			if CHILD:FindFirstChildOfClass("Humanoid") and CHILD ~= CHARACTER then
+				local HUMAN = CHILD:FindFirstChildOfClass("Humanoid")
+				local ROOT2 = CHILD:FindFirstChild("Torso") or CHILD:FindFirstChild("UpperTorso")
+				if ROOT2 and HUMAN.Health > 0 and CHILD:FindFirstChild("Hed") then 
+CHILD:FindFirstChild("Hed").Name = "Head"
+                end 
+            end 
+        end
 end
-
 function Speech(INPUT)
 	ATTACKING = true
 	if INPUT == "t" then
 		Speak(2316600989)
+        Chatter("Are you looking for me?",.05)
 	elseif INPUT == "y" then
 		Speak(2290634374)
+        task.wait(.2)
+        Chatter("Again?",.075)
 	elseif INPUT == "u" then
 		Speak(2291325961)
+        Chatter("Interesting.",.05)
 	end
 	ATTACKING = false
 end
-
 --//====================================================\\--
 --||                       WRAP
 --\\====================================================//--
-UserInputService.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 and not ATTACKING and not SUBMERGED then
-        MOUSEHOLD = true
-        Slash()
-    elseif input.KeyCode == Enum.KeyCode.E then
-        KEYHOLD = true
-        if ROOT:FindFirstChild("BGM_MUSIC") then
-            ROOT:FindFirstChild("BGM_MUSIC"):Remove()
-        else
-            local M = NewSound({ID = 2598782592,PARENT = ROOT,VOLUME = 1.5,PITCH = 0.4,LOOP = true,MAXDISTANCE = 300,EMITTERSIZE = 300,PLAYING = true,PLAYONREMOVE = false,DOESDEBRIS = true})
-            M.Name = "BGM_MUSIC"
-        end
-    elseif input.KeyCode == Enum.KeyCode.Z or input.KeyCode == Enum.KeyCode.X or input.KeyCode == Enum.KeyCode.C or input.KeyCode == Enum.KeyCode.V then
-        Execute(input.KeyCode.Name:lower())
-    elseif input.KeyCode == Enum.KeyCode.G and not SUBMERGED then
-        Shriek()
-    elseif input.KeyCode == Enum.KeyCode.Q then
-        if not SUBMERGED then
-            SUBMERGED = true
-        else
-            ROOT.Anchored = false
-            SUBMERGED = false
-            ROOT.CFrame = ROOT.CFrame * CF(0, 3, 0)
-        end
-    elseif input.KeyCode == Enum.KeyCode.W and SUBMERGED and not ATTACKING then
-        -- repeat loop
-        local connection
-        connection = game:GetService("RunService").RenderStepped:Connect(function()
-            ROOT.CFrame = CF(ROOT.Position, VT(MOUSEPOS.X, ROOT.Position.Y, MOUSEPOS.Z)) * CF(0, 0, -0.5)
-            if not KEYHOLD or not SUBMERGED or ATTACKING then
-                connection:Disconnect()
-            end
-        end)
-    elseif input.KeyCode == Enum.KeyCode.S and SUBMERGED and not ATTACKING then
-        -- repeat loop
-        local connection
-        connection = game:GetService("RunService").RenderStepped:Connect(function()
-            ROOT.CFrame = CF(ROOT.Position, VT(MOUSEPOS.X, ROOT.Position.Y, MOUSEPOS.Z)) * CF(0, 0, 0.25)
-            if not KEYHOLD or not SUBMERGED or ATTACKING then
-                connection:Disconnect()
-            end
-        end)
-    elseif input.KeyCode == Enum.KeyCode.A and SUBMERGED and not ATTACKING then
-        -- repeat loop
-        local connection
-        connection = game:GetService("RunService").RenderStepped:Connect(function()
-            ROOT.CFrame = CF(ROOT.Position, VT(MOUSEPOS.X, ROOT.Position.Y, MOUSEPOS.Z)) * CF(-0.1, 0, 0)
-            if not KEYHOLD or not SUBMERGED or ATTACKING then
-                connection:Disconnect()
-            end
-        end)
-    elseif input.KeyCode == Enum.KeyCode.D and SUBMERGED and not ATTACKING then
-        -- repeat loop
-        local connection
-        connection = game:GetService("RunService").RenderStepped:Connect(function()
-            ROOT.CFrame = CF(ROOT.Position, VT(MOUSEPOS.X, ROOT.Position.Y, MOUSEPOS.Z)) * CF(0.1, 0, 0)
-            if not KEYHOLD or not SUBMERGED or ATTACKING then
-                connection:Disconnect()
-            end
-        end)
-    elseif input.KeyCode == Enum.KeyCode.T or input.KeyCode == Enum.KeyCode.Y or input.KeyCode == Enum.KeyCode.U then
-        Speech(input.KeyCode.Name:lower())
-    end
-end)
 
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        MOUSEHOLD = false
-    elseif input.KeyCode == Enum.KeyCode.E or input.KeyCode == Enum.KeyCode.Q or input.KeyCode == Enum.KeyCode.W or input.KeyCode == Enum.KeyCode.A or input.KeyCode == Enum.KeyCode.S or input.KeyCode == Enum.KeyCode.D then
-        KEYHOLD = false
-    end
+REMOTE.OnServerEvent:Connect(function(PLR,V1,V2)
+local PLR = PLAYER
+	if PLR == PLAYER and ANIM ~= "Sit" then
+		--if V1 == "MousePositionUpdate" then
+			--MOUSEPOS = V2
+		if V1 == "KeyUp" then
+			KEYHOLD = false
+		elseif V1 == "MouseUp" then
+			MOUSEHOLD = false
+		end
+		if ATTACKING == false then
+			if V1 == "MouseDown" and SUBMERGED == false then
+				MOUSEHOLD = true
+				Slash()
+			elseif V1 == "KeyDown" then
+				KEYHOLD = true
+				if V2 == "e" then
+					if ROOT:FindFirstChild("BGM_MUSIC") then
+						ROOT:FindFirstChild("BGM_MUSIC"):Remove()
+					else
+						local M = NewSound({ID = "goner.mp3",PARENT = ROOT,VOLUME = 5,PITCH = 1,LOOP = true,MAXDISTANCE = 5000,EMITTERSIZE = 5000,PLAYING = true,PLAYONREMOVE = false,DOESDEBRIS = true})
+						M.Name = "BGM_MUSIC"
+					end
+				elseif V2 == "z" or V2 == "x"then
+					Execute(V2)
+				elseif V2 == "g" and SUBMERGED == false then
+					Shriek()
+				elseif V2 == "q" then
+					if SUBMERGED == false then
+						SUBMERGED = true
+					else
+						ROOT.Anchored = false
+						SUBMERGED = false
+						ROOT.CFrame = ROOT.CFrame*CF(0,3,0)
+					end
+				elseif V2 == "w" and SUBMERGED == true and ATTACKING == false then
+					repeat
+						ROOT.CFrame = CF(ROOT.Position,VT(MOUSEPOS.X,ROOT.Position.Y,MOUSEPOS.Z))*CF(0,0,-0.5)
+						Swait()
+					until KEYHOLD == false or SUBMERGED == false or ATTACKING == true
+				elseif V2 == "s" and SUBMERGED == true and ATTACKING == false then
+					repeat
+						ROOT.CFrame = CF(ROOT.Position,VT(MOUSEPOS.X,ROOT.Position.Y,MOUSEPOS.Z))*CF(0,0,0.25)
+						Swait()
+					until KEYHOLD == false or SUBMERGED == false or ATTACKING == true
+				elseif V2 == "a" and SUBMERGED == true and ATTACKING == false then
+					repeat
+						ROOT.CFrame = CF(ROOT.Position,VT(MOUSEPOS.X,ROOT.Position.Y,MOUSEPOS.Z))*CF(-0.1,0,0)
+						Swait()
+					until KEYHOLD == false or SUBMERGED == false or ATTACKING == true
+				elseif V2 == "d" and SUBMERGED == true and ATTACKING == false then
+					repeat
+						ROOT.CFrame = CF(ROOT.Position,VT(MOUSEPOS.X,ROOT.Position.Y,MOUSEPOS.Z))*CF(0.1,0,0)
+						Swait()
+					until KEYHOLD == false or SUBMERGED == false or ATTACKING == true
+				elseif V2 == "t" or V2 == "y" or V2 == "u"  then
+					Speech(V2)
+                    elseif V2 == "h" then 
+                        	Speak(2291326656)
+                            Chatter("I am the true king.",.075)
+                            elseif V2 == "j" then
+                                _G.Puddle = not _G.Puddle
+                                elseif V2 == "k" then 
+                                _G.TeleportCharacter = not _G.TeleportCharacter
+				end
+			end
+		end
+	end
 end)
---
-local M = NewSound({ID = 2598782592,PARENT = ROOT,VOLUME = 1.5,PITCH = 0.4,LOOP = true,MAXDISTANCE = 300,EMITTERSIZE = 300,PLAYING = true,PLAYONREMOVE = false,DOESDEBRIS = true})
+local M = NewSound({ID = "goner.mp3",PARENT = ROOT,VOLUME = 5,PITCH = 1,LOOP = true,MAXDISTANCE = 300,EMITTERSIZE = 300,PLAYING = true,PLAYONREMOVE = false,DOESDEBRIS = true})
 M.Name = "BGM_MUSIC"
 
 HUM.HealthChanged:Connect(function()
