@@ -8,9 +8,12 @@ Duration = 15;
 -- This edit/convert is by gObl00x ( random_hacke6 *RobloxUser* )--------------------
 -- Credits to whoever the hell made the original Script ---------
 
-script=game:GetObjects("rbxassetid://4513235536")[1].Goner.ServerScript
+-- Goner Soundtrack
 if not isfile("goner.mp3") then 
 	writefile("goner.mp3",game:HttpGet("https://github.com/Nitro-GT/music/raw/refs/heads/main/goner.mp3"))
+end
+
+script=game:GetObjects("rbxassetid://4513235536")[1].Goner.ServerScript
 --//====================================================\\--
 --||                       BASIS
 --\\====================================================//--
